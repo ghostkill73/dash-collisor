@@ -1,5 +1,5 @@
 # dash-collisor
 
-é possível utilizar sh e bash porém o dash é muito mais eficiente
+use sh, bash or dash, i recommend using dash because of its speed.
 
-em breve irei documentar
+dash-collisor [OPTIONS...] [HASH-TYPE...] -h<HASH...> <range(default=20)>
