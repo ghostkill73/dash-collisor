@@ -1,5 +1,5 @@
 # dash-collisor
 
-use sh, bash or dash, i recommend using dash because of its speed.
+bourne-shell based support
 
 dash-collisor [OPTIONS...] [HASH-TYPE...] -h<HASH...> <range(default=20)>
