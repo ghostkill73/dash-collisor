@@ -3,10 +3,8 @@
 # autor   : Abner Benedito
 # github  : ghostkill73
 # creation: 2024-06-07
-# version : 0.0.1.1 (2024-06-09)
+# version : 0.0.2 (2024-06-29)
 # license : GPLv3+
-# ----------------------------------------------------------------------+
-# DESCRIPTION
 # ----------------------------------------------------------------------+
 # LICENSE
 #
@@ -28,143 +26,281 @@
 # ----------------------------------------------------------------------+
 # CONFIGURATIONS
 
-# Disable unicode.
-LC_ALL=C; LANG=C
 
 # ----------------------------------------------------------------------+
 # VARIABLES
 
-VERSION="v0.0.1.1"
-SAVEFILE="save-hash-collision.txt"
+_dc_version="v0.0.2"
+_dc_savefile="save-hash-collision.txt"
+
+_dc_true="0"
+_dc_false="1"
+
+_dc_savecommand="./dash-collisor ${*}"
 
 # ----------------------------------------------------------------------+
 # FUNCTIONS
 
-showHelp() {
-# md5, sha1, sha224, sha256, sha384, sha512 & b2
-printf '%s\n' "dash-collisor  Copyright (C) 2024  Abner Benedito
- This program comes with ABSOLUTELY NO WARRANTY
- This is free software, and you are welcome to redistribute it
- under certain conditions.
+msg() { printf '%s\n' "$*" 2>/dev/null; }
 
-Usage: dash-collisor [OPTIONS...] [HASH-TYPE...] -h<HASH...> <range(default=20)>
-dash-collisor is a bruteforce that searches for collisions of a hash.
-
-      --help                 display this help and exit
-  -V, --version              output version information and exit
-  -L, --license              display the license program
-      --[HASH-TYPE]          find hash collisions at the input
-			       avaliable hashes:
-			       md5, sha1, sha224, sha256, sha384,
-			       sha512 and b2
-  -nv, --no-verbose          don't display hashes calcs
-  -s,  --save                save the collision result
-
-  example: ./dash-collisor --save --md5 -h63a9f0ea7bb98050796b649e85481845 30
-
-contribute and report bugs in: <github.com/ghostkill73/dash-collisor>"
+tmsg()
+{
+	sleep 0.05
+	printf '%s\n' "$*" 2>/dev/null
 }
 
-showError() {
-local option="$1"
-printf '%s\n' "  the option "\'$option\'" was not found.
-  type '--help' option for more information."
+show_title()
+{
+	tmsg ''
+	tmsg '                      :::!~!!!!!:.'
+	tmsg '                  .xUHWH!! !!?M88WHX:.'
+	tmsg '                .X*#M@$!!  !X!M$$$$$$WWx:.'
+	tmsg '               :!!!!!!?H! :!$!$$$$$$$$$$8X:'
+	tmsg '              !!~  ~:~!! :~!$!#$$$$$$$$$$8X:'
+	tmsg '             :!~::!H!<   ~.U$X!?R$$$$$$$$MM!'
+	tmsg '             ~!~!!!!~~ .:XW$$$U!!?$$$$$$RMM!'
+	tmsg '               !:~~~ .:!M"T#$$$$WX??#MRRMMM! .sSSSSs.    .sSSSSs.    .sSSSSSSSs  .sSSS SSSSS'
+	tmsg '               ~?WuxiW*`   `"#$$$$8!!!!??!!! S SSSSSSSs. S SSSSSSSs. S SSS SSSS  S SSS SSSSS'
+	tmsg '             :X- M$$$$       `"T#$T~!8$WUXU~ S  SS SSSSS S  SS SSSSS S  SS       S  SS SSSSS'
+	tmsg '            :%`  ~#$$$m:        ~!~ ?$$$$$$  S..SS SSSSS S..SSsSSSSS `SSSSsSSSa. S..SSsSSSSS'
+	tmsg '          :!`.-   ~T$$$$8xx.  .xWW- ~""##*"  S:::S SSSSS S:::S SSSSS .sSSS SSSSS S:::S SSSSS'
+	tmsg '.....   -~~:<` !    ~?T#$$@@W@*?$$      /`   S;;;S SSSSS S;;;S SSSSS S;;;S SSSSS S;;;S SSSSS'
+	tmsg 'W$@@M!!! .!~~ !!     .:XUW$W!~ `"~:    :     S%%%S SSSS  S%%%S SSSSS S%%%S SSSSS S%%%S SSSSS'
+	tmsg '#"~~`.:x%`!!  !H:   !WM$$$$Ti.: .!WUn+!`     SSSSSsS;:   SSSSS SSSSS SSSSSsSSSSS SSSSS SSSSS'
+	tmsg ':::~:!!`:X~ .: ?H.!u "$$$B$$$!W:U!T$$M~                         collisor'
+	tmsg '.~~   :X@!.-~   ?@WTWo("*$$$W$TH$! `'
+	tmsg 'Wi.~!X$?!-~    : ?$$$B$Wu("**$RM!'
+	tmsg '$R@i.~~ !     :   ~$$$$$B$$en:``'
+	tmsg '?MXT@Wx.~    :     ~"##*$$$$M~"'
+	tmsg ''
 }
 
-showVersion() {
-printf '%s\n' "  dash-collisor "$VERSION" <github.com/ghostkill73/dash-collisor>"
+showHelp()
+{
+	msg "dash-collisor ${_dc_version} Copyright (C) 2024  Abner Benedito"
+	msg " This program comes with ABSOLUTELY NO WARRANTY"
+	msg " This is free software, and you are welcome to redistribute it"
+	msg " under certain conditions."
+	msg ""
+	msg "Usage: dash-collisor [OPTION] [HASH-TYPE...] -h<HASH...> <range(default=20)>"
+	msg "dash-collisor is a random bruteforce that searches for collisions of a hash."
+	msg ""
+	msg "      --help                 display this help and exit"
+	msg "  -V, --version              output version information and exit"
+	msg "  -L, --license              display the license program"
+	msg "      --[HASH-TYPE]          find hash collisions at the input"
+	msg "			       avaliable hashes:"
+	msg "			       md5, sha1, sha224, sha256, sha384,"
+	msg "			       sha512 and b2"
+	msg "  -nv, --no-verbose          don't display hashes calcs"
+	msg "  -s,  --save                save the collision result"
+	msg "  -nvs,-snv                  --save && --no-verbose"
+	msg ""
+	msg "  example: ./dash-collisor --save --md5 -h63a9f0ea7bb98050796b649e85481845 30"
+	msg ""
+	msg "contribute and report bugs in: <github.com/ghostkill73/dash-collisor>"
+
+	exit ${_dc_true}
 }
 
-shortLicense() {
-printf '%s\n' " dash-collisor  Copyright (C) 2024  Abner Benedito
- This program comes with ABSOLUTELY NO WARRANTY
- This is free software, and you are welcome to redistribute it
- under certain conditions. use '--license' for more information.
+showError()
+{
+	local option="$1"
 
- use "--help" option for more information."
+	msg " the option "\'$option\'" was not found."
+	msg " type '--help' option for more information."
+
+	exit ${_dc_false}
+}
+
+showVersion()
+{
+	msg " dash-collisor ${_dc_version} <github.com/ghostkill73/dash-collisor>"
+
+	exit ${_dc_true}
+}
+
+shortLicense()
+{
+	msg " dash-collisor  Copyright (C) 2024  Abner Benedito"
+	msg " This program comes with ABSOLUTELY NO WARRANTY"
+	msg " This is free software, and you are welcome to redistribute it"
+	msg " under certain conditions. use '--license' for more information."
+	msg ""
+	msg " use '--help' option for more information."
+
+	exit ${_dc_true}
+}
+
+license()
+{
+	msg " dash-collisor Copyright (C) 2024  Abner Benedito"
+	msg ""
+	msg " This program is free software: you can redistribute it and/or modify"
+	msg " it under the terms of the GNU General Public License as published by"
+	msg " the Free Software Foundation, either version 3 of the License, or"
+	msg " (at your option) any later version."
+	msg ""
+	msg " This program is distributed in the hope that it will be useful,"
+	msg " but WITHOUT ANY WARRANTY; without even the implied warranty of"
+	msg " MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+	msg " GNU General Public License for more details."
+	msg ""
+	msg " You should have received a copy of the GNU General Public License"
+	msg " along with this program.  If not, see <https://www.gnu.org/licenses/>."
+
+	exit ${_dc_true}
 }
 
 
-license() {
-printf '%s\n' " dash-collisor Copyright (C) 2024  Abner Benedito
+hash()
+{
+	local _dc_hash
+	local _dc_hashtype="$1"
+	local _dc_hashvalue="$2"
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+	case ${_dc_hashtype} in
+	# md5, sha1, sha224, sha256, sha384, sha512 & b2
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+	--md5) _dc_hash="$(printf '%s' "$_dc_hashvalue" | md5sum)"; printf '%s\n' "${_dc_hash%% *}" ;;
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <https://www.gnu.org/licenses/>."
+	--sha1) _dc_hash="$(printf '%s' "$_dc_hashvalue" | sha1sum)"; printf '%s\n' "${_dc_hash%% *}" ;;
+
+	--sha224) _dc_hash="$(printf '%s' "$_dc_hashvalue" | sha224sum)"; printf '%s\n' "${_dc_hash%% *}" ;;
+
+	--sha256) _dc_hash="$(printf '%s' "$_dc_hashvalue" | sha256sum)"; printf '%s\n' "${_dc_hash%% *}" ;;
+
+	--sha384) _dc_hash="$(printf '%s' "$_dc_hashvalue" | sha384sum)"; printf '%s\n' "${_dc_hash%% *}" ;;
+
+	--sha512) _dc_hash="$(printf '%s' "$_dc_hashvalue" | sha512sum)"; printf '%s\n' "${_dc_hash%% *}" ;;
+
+	--b2) _dc_hash="$(printf '%s' "$_dc_hashvalue" | b2sum)"; printf '%s\n' "${_dc_hash%% *}" ;;
+
+	*) exit ${_dc_false} ;;
+
+	esac
+
+	return ${_dc_true}
 }
 
-hash() {
-local type="$1"
-local value="$2"
 
-case $type in
-# md5, sha1, sha224, sha256, sha384, sha512 & b2
+check_options()
+{
+	local check="$*"
 
---md5) HASH="$(printf '%s' "$value" | md5sum)"; printf '%s\n' "${HASH%% *}" ;;
-
---sha1) HASH="$(printf '%s' "$value" | sha1sum)"; printf '%s\n' "${HASH%% *}" ;;
-
---sha224) HASH="$(printf '%s' "$value" | sha224sum)"; printf '%s\n' "${HASH%% *}" ;;
-
---sha256) HASH="$(printf '%s' "$value" | sha256sum)"; printf '%s\n' "${HASH%% *}" ;;
-
---sha384) HASH="$(printf '%s' "$value" | sha384sum)"; printf '%s\n' "${HASH%% *}" ;;
-
---sha512) HASH="$(printf '%s' "$value" | sha512sum)"; printf '%s\n' "${HASH%% *}" ;;
-
---b2) HASH="$(printf '%s' "$value" | b2sum)"; printf '%s\n' "${HASH%% *}" ;;
-
-esac
-}
-
-main() {
-local type="$1"
-local hash="$2"
-local limit="$3"
-
-[ -z "$limit" ] && { limit='20'; }
-[ -z "$VERBOSE" ] && { VERBOSE='on'; }
-[ -z "$SAVE" ] && { SAVE='off'; }
-
-[ "$VERBOSE" = 'on' ] && {
-	while :; do
-#	local random="$(mktemp --dry-run XXXXXXXXXXXXXXXXXXXXXXXXX)" # use this for more performance
-	local random="$(head /dev/urandom | tr -dc "[:graph:]" | head -c "$limit"; echo)"
-
-	if [ "$(hash "$type" "$random")" = "$hash" ]; then
-		printf '%s\n' "[+] hash("$random") = ${hash}"
-		[ "$SAVE" = 'on' ] && \
-		printf '%s\n' "$(date "+%D %H:%M"): hash("$random") = ${hash}" >> $SAVEFILE
-		exit 0
+	# if no-verbose -> off
+	if echo "$check" | grep -Pq '\-\-no-verbose|\-nv|\-nvs|\-snv'; then
+		_dc_setverbose="${_dc_false}"
 	else
-		printf '%s\n' "[-] hash("$random") != ${hash}"
+		_dc_setverbose="${_dc_true}"
 	fi
-	done
+
+	# if save -> on
+	if echo "$check" | grep -Pq '\-\-save|\-s|\-nvs|\-snv'; then
+		_dc_setsave="${_dc_true}"
+	else
+		_dc_setsave="${_dc_false}"
+	fi
 }
 
-[ "$VERBOSE" = 'off' ] && {
-	while :; do
-#	local random="$(mktemp --dry-run XXXXXXXXXXXXXXXXXXXXXXXXX)" # use this for more performance
-	local random="$(head /dev/urandom | tr -dc "[:graph:]" | head -c "$limit"; echo)"
+check_arguments()
+{
+	local check="$*"
 
-	[ "$(hash "$type" "$random")" = "$hash" ] && {
-	        printf '%s\n' "[+] hash("$random") = ${hash}"
-		[ "$SAVE" = 'on' ] && \
-		printf '%s\n' "$(date "+%D %H:%M"): hash("$random") = ${hash}" >> $SAVEFILE
-	        exit 0
+	if echo "$check" | grep -Pq '\-\-no-verbose|\-nv|\-\-save|\-s|\-nvs|-snv'; then
+		msg "dash-collisor [OPTIONS] [HASH-TYPE] -h<HASH> <limit(default=20)>"
+		msg " use a single option in the first argument."
+		msg " type '--help' option for more information."
+		exit ${_dc_false}
+	fi
+}
+
+
+main()
+{
+	local _dc_mainrandom
+	local _dc_maintype="$1"
+	local _dc_mainhash="$2"
+	local _dc_setlimit="$3"
+
+	: ${_dc_setverbose:=0} # default verbose: on
+	: ${_dc_setsave:=1}    # default save:    off
+	: ${_dc_setlimit:=20}  # default limit:   20
+
+	check_main
+
+	[ "$_dc_setverbose" = '0' ] && {
+		while :; do
+		_dc_mainrandom="$(LC_ALL=C head /dev/urandom | tr -dc "[:graph:]" | head -c "$_dc_setlimit"; echo)"
+
+		if [ "$(hash "$_dc_maintype" "$_dc_mainrandom")" = "$_dc_mainhash" ]; then
+			printf '%s\n' "[+] hash("$_dc_mainrandom") = ${_dc_mainhash}"
+			[ "$_dc_setsave" = '0' ] && \
+			printf '%s\n' "$(date "+%D %H:%M"): hash("$_dc_mainrandom") = ${_dc_mainhash}" >> $_dc_savefile
+			exit ${_dc_true}
+		else
+			printf '%s\n' "[-] hash("$_dc_mainrandom") != ${_dc_mainhash}"
+			printf '\e[1A'
+		fi
+		done
 	}
-	done
+
+	[ "$_dc_setverbose" = '1' ] && {
+		while :; do
+		_dc_mainrandom="$(LC_ALL=C head /dev/urandom | tr -dc "[:graph:]" | head -c "$_dc_setlimit"; echo)"
+
+		[ "$(hash "$_dc_maintype" "$_dc_mainrandom")" = "$_dc_mainhash" ] && {
+		        printf '%s\n' "[+] hash("$_dc_mainrandom") = ${_dc_mainhash}"
+			[ "$_dc_setsave" = '0' ] && \
+			printf '%s\n' "$(date "+%D %H:%M"): hash("$_dc_mainrandom") = ${_dc_mainhash}" >> $_dc_savefile
+		        exit ${_dc_true}
+		}
+		done
+	}
 }
 
+check_main()
+{
+	local __confirm__
+
+	printf '\e[2J\e[H'
+	msg "cleaning the screen..."
+	msg ""
+
+	show_title
+
+	msg "command          : ${_dc_savecommand}"
+	msg ""
+
+	if [ "${_dc_setsave}" = '0' ]; then
+		msg "save option      : true (${_dc_savefile})"
+	else
+		msg "save option      : false"
+	fi
+
+	if [ "${_dc_setverbose}" = '0' ]; then
+		msg "verbose mode     : on"
+	else
+		msg "verbose mode     : off"
+	fi
+
+	msg "random text limit: ${_dc_setlimit}"
+
+	msg "hash type        : ${_dc_maintype#--}"
+
+	msg "target           : ${_dc_mainhash}"
+	msg ""
+
+	read -p "continue? (y/N): " __confirm__
+	case ${__confirm__} in
+		[yY]*) return ${_dc_true} ;;
+		[nN]*) exit   ${_dc_true} ;;
+		*) printf "invalid option."; exit ${_dc_false} ;;
+	esac
+
+	msg ""
+
+	return ${_dc_true}
 }
 
 # ----------------------------------------------------------------------+
@@ -173,64 +309,33 @@ local limit="$3"
 if [ "$#" = '0' ]; then
 	shortLicense
 else
-	case $1 in
-		#case: dash-collisor --[hash-type]
-		--md5|--sha1|--sha224|--sha256|--sha384|--sha512|--b2)
-			main $1 ${2#*-h} $3
-		;;
+	case ${1} in
+	--help) showHelp ;;
 
-		--help) showHelp ;;
+	--license|-L) license ;;
 
-		-L|--license) license ;;
+	--version|-V) showVersion ;;
 
-		-V|--version) showVersion ;;
+	--md5|--sha1|--sha224|--sha256|--sha384|--sha512|--b2)
 
-		-nv|--no-verbose|-s|--save|-snv|-nvs)
-		#case: dash-collisor -nv
-		[ "$1" = '-nv' ] || [ "$1" = '--no-verbose' ] && {
-			VERBOSE='off'
+		check_arguments $2 $3 # checking $2 $3
 
-			[ "$2" = '-s' ] || [ "$2" = '--save' ] && {
-				SAVE='on'
-			}
-		}
+		: ${2:?hash is unset or null}
 
-		#case: dash-collisor -s
-		[ "$1" = '-s' ] || [ "$1" = '--save' ] && {
-			SAVE='on'
+		main ${1} ${2} ${3}
 
-			[ "$2" = '-nv' ] || [ "$2" = '--no-verbose' ] && {
-				VERBOSE='off'
-			}
-		}
+	;;
 
-		#case: dash-collisor [-snv|-nvs]
-		[ "$1" = '-snv' ] || [ "$1" = '-nvs' ] && {
-			SAVE='on'
-			VERBOSE='off'
-		}
+	--save|-s|--no-verbose|-nv|-nvs|-svn)
 
-		case $2 in
-			# case: dash-collider -s|-nv|-nvs|-snv --[hash-type]
-			--md5|--sha1|--sha224|--sha256|--sha384|--sha512|--b2)
-				main $2 ${3#*-h} $4
-			;;
+		check_options $1 # checking $1
+		check_arguments $2 $3 $3 # checking $2 $3 $4
 
-			#case: dash-collider --save --no-verbose --[hash-type]
-			#case: dash-collider --no-verbose --save --[hash-type]
-			-nv|--no-verbose|-s|--save)
-			case $3 in
-				--md5|--sha1|--sha224|--sha256|--sha384|--sha512|--b2)
-					main $3 ${4#*-h} $5
-				;;
+		: ${2:?hashtype is unset or null}
+		: ${3:?hash is unset or null}
 
-				*) showError "$3" ;;
-			esac # case $3
-		        ;;
-
-			*) showError "$2" ;;
-		esac # case $2
-		;;
+		main ${2} ${3} ${4}
+	;;
 
 	*) showError "$1" ;;
 	esac # case $1
