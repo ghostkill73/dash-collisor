@@ -1,3 +1,5 @@
+![banner](dash_collisor.jpg)
+
 # dash-collisor
 
 bourne-shell based support
