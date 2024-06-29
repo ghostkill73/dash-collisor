@@ -82,7 +82,7 @@ showHelp()
 	msg " This is free software, and you are welcome to redistribute it"
 	msg " under certain conditions."
 	msg ""
-	msg "Usage: dash-collisor [OPTION] [HASH-TYPE...] -h<HASH...> <range(default=20)>"
+	msg "Usage: dash-collisor [OPTION] [HASH-TYPE...] <HASH...> <range(default=20)>"
 	msg "dash-collisor is a random bruteforce that searches for collisions of a hash."
 	msg ""
 	msg "      --help                 display this help and exit"
@@ -96,7 +96,7 @@ showHelp()
 	msg "  -s,  --save                save the collision result"
 	msg "  -nvs,-snv                  --save && --no-verbose"
 	msg ""
-	msg "  example: ./dash-collisor --save --md5 -h63a9f0ea7bb98050796b649e85481845 30"
+	msg "  example: ./dash-collisor --save --md5 63a9f0ea7bb98050796b649e85481845 30"
 	msg ""
 	msg "contribute and report bugs in: <github.com/ghostkill73/dash-collisor>"
 
@@ -208,7 +208,7 @@ check_arguments()
 	local check="$*"
 
 	if echo "$check" | grep -Pq '\-\-no-verbose|\-nv|\-\-save|\-s|\-nvs|-snv'; then
-		msg "dash-collisor [OPTIONS] [HASH-TYPE] -h<HASH> <limit(default=20)>"
+		msg "dash-collisor [OPTIONS] [HASH-TYPE] <HASH> <limit(default=20)>"
 		msg " use a single option in the first argument."
 		msg " type '--help' option for more information."
 		exit ${_dc_false}

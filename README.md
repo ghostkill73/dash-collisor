@@ -4,4 +4,4 @@
 
 bourne-shell based support
 
-dash-collisor [OPTIONS...] [HASH-TYPE...] -h<HASH...> <range(default=20)>
+dash-collisor [OPTIONS...] [HASH-TYPE...] <HASH...> <range(default=20)>
