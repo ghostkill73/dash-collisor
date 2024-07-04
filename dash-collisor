@@ -3,7 +3,7 @@
 # autor   : Abner Benedito
 # github  : ghostkill73
 # creation: 2024-06-07
-# version : 0.0.2 (2024-06-29)
+# version : 0.0.2.1 (2024-06-29)
 # license : GPLv3+
 # ----------------------------------------------------------------------+
 # LICENSE
@@ -24,22 +24,22 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # ----------------------------------------------------------------------+
-# CONFIGURATIONS
-
-
-# ----------------------------------------------------------------------+
 # VARIABLES
 
-_dc_version="v0.0.2"
+_dc_version="v0.0.2.1"
 _dc_savefile="save-hash-collision.txt"
 
 _dc_true="0"
 _dc_false="1"
 
-_dc_savecommand="./dash-collisor ${*}"
+_dc_savecommand="$0 ${*}"
 
 # ----------------------------------------------------------------------+
 # FUNCTIONS
+
+###########################################################################
+# basic functions for operation
+###########################################################################
 
 msg() { printf '%s\n' "$*" 2>/dev/null; }
 
@@ -48,6 +48,10 @@ tmsg()
 	sleep 0.05
 	printf '%s\n' "$*" 2>/dev/null
 }
+
+###########################################################################
+# software messages
+###########################################################################
 
 show_title()
 {
@@ -67,15 +71,17 @@ show_title()
 	tmsg '.....   -~~:<` !    ~?T#$$@@W@*?$$      /`   S;;;S SSSSS S;;;S SSSSS S;;;S SSSSS S;;;S SSSSS'
 	tmsg 'W$@@M!!! .!~~ !!     .:XUW$W!~ `"~:    :     S%%%S SSSS  S%%%S SSSSS S%%%S SSSSS S%%%S SSSSS'
 	tmsg '#"~~`.:x%`!!  !H:   !WM$$$$Ti.: .!WUn+!`     SSSSSsS;:   SSSSS SSSSS SSSSSsSSSSS SSSSS SSSSS'
-	tmsg ':::~:!!`:X~ .: ?H.!u "$$$B$$$!W:U!T$$M~                         collisor'
+	tmsg ':::~:!!`:X~ .: ?H.!u "$$$B$$$!W:U!T$$M~                          collisor'
 	tmsg '.~~   :X@!.-~   ?@WTWo("*$$$W$TH$! `'
 	tmsg 'Wi.~!X$?!-~    : ?$$$B$Wu("**$RM!'
 	tmsg '$R@i.~~ !     :   ~$$$$$B$$en:``'
 	tmsg '?MXT@Wx.~    :     ~"##*$$$$M~"'
 	tmsg ''
+
+	return ${_dc_true}
 }
 
-showHelp()
+show_help()
 {
 	msg "dash-collisor ${_dc_version} Copyright (C) 2024  Abner Benedito"
 	msg " This program comes with ABSOLUTELY NO WARRANTY"
@@ -103,7 +109,7 @@ showHelp()
 	exit ${_dc_true}
 }
 
-showError()
+show_error()
 {
 	local option="$1"
 
@@ -113,14 +119,14 @@ showError()
 	exit ${_dc_false}
 }
 
-showVersion()
+show_version()
 {
 	msg " dash-collisor ${_dc_version} <github.com/ghostkill73/dash-collisor>"
 
 	exit ${_dc_true}
 }
 
-shortLicense()
+short_license()
 {
 	msg " dash-collisor  Copyright (C) 2024  Abner Benedito"
 	msg " This program comes with ABSOLUTELY NO WARRANTY"
@@ -153,6 +159,10 @@ license()
 }
 
 
+###########################################################################
+# utility for hash calc
+###########################################################################
+
 hash()
 {
 	local _dc_hash
@@ -184,6 +194,11 @@ hash()
 }
 
 
+
+###########################################################################
+# checking
+###########################################################################
+
 check_options()
 {
 	local check="$*"
@@ -207,56 +222,12 @@ check_arguments()
 {
 	local check="$*"
 
-	if echo "$check" | grep -Pq '\-\-no-verbose|\-nv|\-\-save|\-s|\-nvs|-snv'; then
+	if echo "$check" | grep -Pq '\-\-no-verbose|\-nv|\-\-save|\-s|\-nvs|\-snv'; then
 		msg "dash-collisor [OPTIONS] [HASH-TYPE] <HASH> <limit(default=20)>"
 		msg " use a single option in the first argument."
 		msg " type '--help' option for more information."
 		exit ${_dc_false}
 	fi
-}
-
-
-main()
-{
-	local _dc_mainrandom
-	local _dc_maintype="$1"
-	local _dc_mainhash="$2"
-	local _dc_setlimit="$3"
-
-	: ${_dc_setverbose:=0} # default verbose: on
-	: ${_dc_setsave:=1}    # default save:    off
-	: ${_dc_setlimit:=20}  # default limit:   20
-
-	check_main
-
-	[ "$_dc_setverbose" = '0' ] && {
-		while :; do
-		_dc_mainrandom="$(LC_ALL=C head /dev/urandom | tr -dc "[:graph:]" | head -c "$_dc_setlimit"; echo)"
-
-		if [ "$(hash "$_dc_maintype" "$_dc_mainrandom")" = "$_dc_mainhash" ]; then
-			printf '%s\n' "[+] hash("$_dc_mainrandom") = ${_dc_mainhash}"
-			[ "$_dc_setsave" = '0' ] && \
-			printf '%s\n' "$(date "+%D %H:%M"): hash("$_dc_mainrandom") = ${_dc_mainhash}" >> $_dc_savefile
-			exit ${_dc_true}
-		else
-			printf '%s\n' "[-] hash("$_dc_mainrandom") != ${_dc_mainhash}"
-			printf '\e[1A'
-		fi
-		done
-	}
-
-	[ "$_dc_setverbose" = '1' ] && {
-		while :; do
-		_dc_mainrandom="$(LC_ALL=C head /dev/urandom | tr -dc "[:graph:]" | head -c "$_dc_setlimit"; echo)"
-
-		[ "$(hash "$_dc_maintype" "$_dc_mainrandom")" = "$_dc_mainhash" ] && {
-		        printf '%s\n' "[+] hash("$_dc_mainrandom") = ${_dc_mainhash}"
-			[ "$_dc_setsave" = '0' ] && \
-			printf '%s\n' "$(date "+%D %H:%M"): hash("$_dc_mainrandom") = ${_dc_mainhash}" >> $_dc_savefile
-		        exit ${_dc_true}
-		}
-		done
-	}
 }
 
 check_main()
@@ -303,18 +274,64 @@ check_main()
 	return ${_dc_true}
 }
 
+###########################################################################
+# main function
+###########################################################################
+
+main()
+{
+	local _dc_mainrandom
+	local _dc_maintype="$1"
+	local _dc_mainhash="$2"
+	local _dc_setlimit="$3"
+
+	: ${_dc_setverbose:=0} # default verbose: on
+	: ${_dc_setsave:=1}    # default save:    off
+	: ${_dc_setlimit:=20}  # default limit:   20
+
+	check_main
+
+	[ "$_dc_setverbose" = '0' ] && {
+		while :; do
+		_dc_mainrandom="$(LC_ALL=C head /dev/urandom | tr -dc "[:graph:]" | head -c "$_dc_setlimit")"
+
+		if [ "$(hash "$_dc_maintype" "$_dc_mainrandom")" = "$_dc_mainhash" ]; then
+			printf '%s\n' "[+] hash("$_dc_mainrandom") = ${_dc_mainhash}"
+			[ "$_dc_setsave" = '0' ] && \
+			printf '%s\n' "$(date "+%D %H:%M"): hash("$_dc_mainrandom") = ${_dc_mainhash}" >> $_dc_savefile
+			exit ${_dc_true}
+		else
+			printf '%s\n' " hash("$_dc_mainrandom") != ${_dc_mainhash}"
+		fi &
+		done
+	}
+
+	[ "$_dc_setverbose" = '1' ] && {
+		while :; do
+		_dc_mainrandom="$(LC_ALL=C head /dev/urandom | tr -dc "[:graph:]" | head -c "$_dc_setlimit")"
+
+		[ "$(hash "$_dc_maintype" "$_dc_mainrandom")" = "$_dc_mainhash" ] && {
+		        printf '%s\n' "[+] hash("$_dc_mainrandom") = ${_dc_mainhash}"
+			[ "$_dc_setsave" = '0' ] && \
+			printf '%s\n' "$(date "+%D %H:%M"): hash("$_dc_mainrandom") = ${_dc_mainhash}" >> $_dc_savefile
+		        exit ${_dc_true}
+		} &
+		done
+	}
+}
+
 # ----------------------------------------------------------------------+
 ############################ BEGIN SCRIPT ############################
 
 if [ "$#" = '0' ]; then
-	shortLicense
+	short_license
 else
 	case ${1} in
-	--help) showHelp ;;
+	--help) show_help ;;
 
 	--license|-L) license ;;
 
-	--version|-V) showVersion ;;
+	--version|-V) show_version ;;
 
 	--md5|--sha1|--sha224|--sha256|--sha384|--sha512|--b2)
 
@@ -329,7 +346,8 @@ else
 	--save|-s|--no-verbose|-nv|-nvs|-svn)
 
 		check_options $1 # checking $1
-		check_arguments $2 $3 $3 # checking $2 $3 $4
+
+		check_arguments $3 $4 # checking $3 $4
 
 		: ${2:?hashtype is unset or null}
 		: ${3:?hash is unset or null}
@@ -337,7 +355,7 @@ else
 		main ${2} ${3} ${4}
 	;;
 
-	*) showError "$1" ;;
+	*) show_error "$1" ;;
 	esac # case $1
 fi
 
